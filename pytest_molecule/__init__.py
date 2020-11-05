@@ -144,12 +144,16 @@ class MoleculeItem(pytest.Item):
         self.funcargs = {}
         super().__init__(name, parent)
         with open(str(self.fspath), "r") as stream:
-            data = yaml.load(stream, Loader=yaml.SafeLoader)
+            data = yaml.load(stream, Loader=yaml.SafeLoader) or {}
             # we add the driver as mark
-            self.molecule_driver = data["driver"]["name"]
-            self.add_marker(self.molecule_driver)
+            if "driver" in data:
+                self.molecule_driver = data["driver"]["name"]
+                self.add_marker(self.molecule_driver)
+            else:
+                self.molecule_driver = "UNKNOWN"
+
             # we also add platforms as marks
-            for platform in data["platforms"]:
+            for platform in data.get("platforms", []):
                 platform_name = platform["name"]
                 self.config.addinivalue_line(
                     "markers",
