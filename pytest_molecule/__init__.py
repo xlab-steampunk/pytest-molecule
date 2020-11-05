@@ -173,13 +173,15 @@ class MoleculeItem(pytest.Item):
         cwd = os.path.abspath(os.path.join(self.fspath.dirname, "../.."))
         scenario = folders[-1]
         # role = folders[-3]  # noqa
-        cmd = [sys.executable, "-m", "molecule", self.name, "-s", scenario]
+        cmd = [sys.executable, "-m", "molecule"]
 
         # We append the additional options to molecule call, allowing user to
         # control how molecule is called by pytest-molecule
         opts = os.environ.get("MOLECULE_OPTS")
         if opts:
             cmd.extend(shlex.split(opts))
+
+        cmd.extend((self.name, "-s", scenario))
 
         print("running: %s (from %s)" % (" ".join(quote(arg) for arg in cmd), cwd))
         try:
